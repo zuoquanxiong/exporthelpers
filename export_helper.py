@@ -56,7 +56,7 @@ However, this is verbose and prone to leaking your keys/tokens/passwords in shel
 
     epilog += '''
 
-I **highly** recommend checking exported files at least once just to make sure they contain everything you expect from your export
+I **highly** recommend checking exported files at least once just to make sure they contain everything you expect from your export.
 If they don't, please feel free to ask or raise an issue!
     '''
     return epilog

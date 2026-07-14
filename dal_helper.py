@@ -65,19 +65,19 @@ def make_parser(*, single_source: bool = False, package: str | None = None) -> a
     # todo link to exports post why multiple exports could be useful
     if not single_source:
         p.add_argument('--no-glob', action='store_true', help='Treat path in --source literally')
-    p.add_argument('-i', '--interactive', action='store_true', help='Start Ipython session to play with data')
+    p.add_argument('-i', '--interactive', action='store_true', help='Start IPython session to play with data')
 
     p.epilog = f"""
 You can use `{pkg}.dal` (stands for "Data Access/Abstraction Layer") to access your exported data, even offline.
 I elaborate on motivation behind it [here](https://beepb00p.xyz/exports.html#dal).
 
-- main usecase is to be imported as python module to allow for **programmatic access** to your data.
+- the main use case is importing it as a Python module for **programmatic access** to your data.
 
   You can find some inspiration in [`my.`](https://beepb00p.xyz/mypkg.html) package that I'm using as an API to all my personal data.
 
 - to test it against your export, simply run: `python3 -m {pkg}.dal --source /path/to/export`
 
-- you can also try it interactively in an Ipython shell: `python3 -m {pkg}.dal --source /path/to/export --interactive`
+- you can also try it interactively in an IPython shell: `python3 -m {pkg}.dal --source /path/to/export --interactive`
 
 """
     return p
