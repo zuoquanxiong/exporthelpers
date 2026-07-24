@@ -85,6 +85,23 @@ def test_reads_multiple_params_from_command_line(make_parser) -> None:
     }
 
 
+@pytest.mark.parametrize('make_parser', EXPORT_PARSER_FACTORIES)
+def test_hyphenated_param_uses_normalized_name(make_parser) -> None:
+    args = make_parser(params=['token-path']).parse_args(['--token-path', '/tmp/token'])
+
+    assert args.params == {'token_path': '/tmp/token'}
+
+
+@pytest.mark.parametrize('make_parser', EXPORT_PARSER_FACTORIES)
+def test_hyphenated_param_uses_normalized_name_in_secrets_file(make_parser, tmp_path: Path) -> None:
+    secrets = tmp_path / 'secrets.py'
+    secrets.write_text('token_path = "/tmp/token"\n')
+
+    args = make_parser(params=['token-path']).parse_args(['--secrets', str(secrets)])
+
+    assert args.params == {'token_path': '/tmp/token'}
+
+
 def parse_error(
     parser: argparse.ArgumentParser,
     argv: list[str],

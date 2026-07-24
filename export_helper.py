@@ -23,11 +23,16 @@ def _package_name(package: str | None) -> str:
         return package
 
 
-def _export_epilog(*, params: Sequence[str], pkg: str, extra_usage: str | None) -> str:
-    paramss = ' '.join(f'--{p} <{p}>' for p in params)
+def _export_epilog(
+    *,
+    param_actions: Sequence[argparse.Action],
+    pkg: str,
+    extra_usage: str | None,
+) -> str:
+    paramss = ' '.join(f'{action.option_strings[0]} <{action.dest}>' for action in param_actions)
 
     sep = '\n    '
-    secrets_example = sep + sep.join(f'{p} = "{p.upper()}"' for p in params)
+    secrets_example = sep + sep.join(f'{action.dest} = "{action.dest.upper()}"' for action in param_actions)
 
     epilog = f'''
 Usage:
@@ -115,12 +120,8 @@ class Parser(argparse.ArgumentParser):
         if self._export_params is not None:
             raise RuntimeError('export parser is already configured')
 
-        self._export_params = tuple(params)
         self._export_strict = strict
         self.set_defaults(**{_PARAMS_KEY: {}})
-
-        pkg = _package_name(package)
-        self.epilog = _export_epilog(params=params, pkg=pkg, extra_usage=extra_usage)
 
         self.add_argument(
             '--secrets',
@@ -130,8 +131,14 @@ class Parser(argparse.ArgumentParser):
             help='.py file containing API parameters',
         )
         gr = self.add_argument_group('API parameters')
+        param_actions = []
         for param in params:
-            gr.add_argument('--' + param, type=str)
+            action = gr.add_argument('--' + param, type=str)
+            param_actions.append(action)
+        self._export_params = tuple(action.dest for action in param_actions)
+
+        pkg = _package_name(package)
+        self.epilog = _export_epilog(param_actions=param_actions, pkg=pkg, extra_usage=extra_usage)
 
         self.add_argument(
             'path',
